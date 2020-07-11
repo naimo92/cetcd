@@ -39,7 +39,7 @@ threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_
         {
             //启动任务线程
             pthread_create(&(pool->threads[i]), NULL, threadpool_thread, (void *)pool);
-            printf("start thread 0x%x...\n", pool->threads[i]);
+            printf("start thread %llu...\n", pool->threads[i]);
         }
         //启动管理线程
         pthread_create(&(pool->adjust_tid), NULL, adjust_thread, (void *)pool);
@@ -96,7 +96,7 @@ void *threadpool_thread(void *threadpool)
         //任务队列为空的时候，等待
         while ((pool->queue_size == 0) && (!pool->shutdown))
         {
-            printf("thread 0x%x is waiting\n", pthread_self());
+            printf("thread %llu is waiting\n", pthread_self());
             pthread_cond_wait(&(pool->queue_not_empty), &(pool->lock));
             //被唤醒后，判断是否是要退出的线程
             if (pool->wait_exit_thr_num > 0)
@@ -104,7 +104,7 @@ void *threadpool_thread(void *threadpool)
                 pool->wait_exit_thr_num--;
                 if (pool->live_thr_num > pool->min_thr_num)
                 {
-                    printf("thread 0x%x is exiting\n", pthread_self());
+                    printf("thread %llu is exiting\n", pthread_self());
                     pool->live_thr_num--;
                     pthread_mutex_unlock(&(pool->lock));
                     pthread_exit(NULL);
@@ -114,7 +114,7 @@ void *threadpool_thread(void *threadpool)
         if (pool->shutdown)
         {
             pthread_mutex_unlock(&(pool->lock));
-            printf("thread 0x%x is exiting\n", pthread_self());
+            printf("thread %llu is exiting\n", pthread_self());
             pthread_exit(NULL);
         }
         //get a task from queue
@@ -126,13 +126,13 @@ void *threadpool_thread(void *threadpool)
         pthread_cond_broadcast(&(pool->queue_not_full));//通知队列有空余位置
         pthread_mutex_unlock(&(pool->lock));
         // Get to work
-        printf("thread 0x%x start working\n", pthread_self());
+        printf("thread %llu start working\n", pthread_self());
         pthread_mutex_lock(&(pool->thread_counter));
         pool->busy_thr_num++;
         pthread_mutex_unlock(&(pool->thread_counter));
         (*(task.function))(task.arg);//执行相应的任务
         // task run over
-        printf("thread 0x%x end working\n", pthread_self());
+        printf("thread %llu end working\n", pthread_self());
         pthread_mutex_lock(&(pool->thread_counter));
         pool->busy_thr_num--;
         pthread_mutex_unlock(&(pool->thread_counter));

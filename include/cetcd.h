@@ -24,8 +24,7 @@ typedef struct{
     size_t (*curl_callback)(void *contents, size_t size, size_t nmemb, void *userdata);//curl_callback
 }thread_args;
 
-int etcd_put(const char *key, const void *value, int v_len, int ignore, int64_t lease_id, int prev_kv, int ignore_value){
-    
-}
+int etcd_put(const char *key, const void *value, int v_len, int ignore, int64_t lease_id, int prev_kv, int ignore_value);
+int etcd_get();
 
 #endif

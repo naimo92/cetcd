@@ -21,7 +21,7 @@ typedef struct
     void *arg;
 } threadpool_task_t;
 
-struct threadpool_t
+typedef struct
 {
     pthread_mutex_t lock;// mutex for the taskpool
     pthread_mutex_t thread_counter;//mutex for count the busy thread
@@ -40,7 +40,7 @@ struct threadpool_t
     int queue_size;
     int queue_max_size;
     bool shutdown;
-};
+}threadpool_t;
 
 /**
  * @function void *threadpool_thread(void *threadpool)
